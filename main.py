@@ -125,7 +125,7 @@ def get_response(user_text):
 def speak(text):
     try:
         import base64
-        import audioop
+        import subprocess
         response = client.models.generate_content(
             model="gemini-2.5-flash-preview-tts",
             contents=text,
@@ -144,21 +144,25 @@ def speak(text):
         if isinstance(audio_data, str):
             audio_data = base64.b64decode(audio_data)
 
-        # 24000Hz → 44100Hz 리샘플링
-        audio_data, _ = audioop.ratecv(audio_data, 2, 1, 24000, 44100, None)
+        # 임시 파일로 저장
+        tmp = tempfile.NamedTemporaryFile(suffix=".raw", delete=False)
+        tmp.write(audio_data)
+        tmp.close()
 
-        p = pyaudio.PyAudio()
-        stream = p.open(
-            format=pyaudio.paInt16,
-            channels=1,
-            rate=44100,
-            output=True,
-            output_device_index=CARD_INDEX
-        )
-        stream.write(audio_data)
-        stream.stop_stream()
-        stream.close()
-        p.terminate()
+        # ffmpeg으로 리샘플링 후 aplay로 재생
+        subprocess.run([
+            "ffmpeg", "-y",
+            "-f", "s16le", "-ar", "24000", "-ac", "1",
+            "-i", tmp.name,
+            "-f", "s16le", "-ar", "44100", "-ac", "1",
+            "/tmp/tts_out.raw"
+        ], capture_output=True)
+        os.unlink(tmp.name)
+
+        subprocess.run([
+            "aplay", "-f", "S16_LE", "-r", "44100", "-c", "1",
+            "-D", "hw:0,0", "/tmp/tts_out.raw"
+        ])
     except Exception as e:
         print(f"TTS 오류: {e}")
 
