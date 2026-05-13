@@ -8,10 +8,10 @@ import tempfile
 import pyaudio
 from dotenv import load_dotenv
 from PIL import Image
-import google.generativeai as genai
+from google import genai
 
 # 드라이버 경로 추가
-sys.path.append(os.path.expanduser("~/whisplay-ai-chatbot/whisplay/Driver"))
+sys.path.append(os.path.expanduser("~/whisplay/Driver"))
 from WhisPlay import WhisPlayBoard
 from faces.expressions import get_expression, blink_animation
 
