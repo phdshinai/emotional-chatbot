@@ -123,9 +123,9 @@ def get_response(user_text):
 
 
 def speak(text):
-    """Gemini TTS로 음성 출력"""
     try:
-        client = genai.Client(api_key=GEMINI_API_KEY)
+        import base64
+        import audioop
         response = client.models.generate_content(
             model="gemini-2.5-flash-preview-tts",
             contents=text,
@@ -141,13 +141,17 @@ def speak(text):
             )
         )
         audio_data = response.candidates[0].content.parts[0].inline_data.data
+        if isinstance(audio_data, str):
+            audio_data = base64.b64decode(audio_data)
 
-        # 오디오 재생
+        # 24000Hz → 44100Hz 리샘플링
+        audio_data, _ = audioop.ratecv(audio_data, 2, 1, 24000, 44100, None)
+
         p = pyaudio.PyAudio()
         stream = p.open(
             format=pyaudio.paInt16,
             channels=1,
-            rate=16000,
+            rate=44100,
             output=True,
             output_device_index=CARD_INDEX
         )
