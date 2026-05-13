@@ -11,7 +11,7 @@ from PIL import Image
 from google import genai
 
 # 드라이버 경로 추가
-sys.path.append(os.path.expanduser("~/whisplay/Driver"))
+sys.path.append(os.path.expanduser("~/whisplay-ai-chatbot/whisplay/Driver"))
 from WhisPlay import WhisPlayBoard
 from faces.expressions import get_expression, blink_animation
 
