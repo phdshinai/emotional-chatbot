@@ -147,7 +147,7 @@ def speak(text):
         stream = p.open(
             format=pyaudio.paInt16,
             channels=1,
-            rate=24000,
+            rate=16000,
             output=True,
             output_device_index=CARD_INDEX
         )
