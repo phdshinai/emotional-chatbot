@@ -9,9 +9,12 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
-# whisplay-ai-chatbot 폴더로 .env 복사
-cp .env whisplay-ai-chatbot/.env
+# 드라이버 경로 확인
+if [ ! -f ~/whisplay/Driver/WhisPlay.py ]; then
+    echo "❌ Whisplay 드라이버가 없어요!"
+    echo "bash install.sh 먼저 실행하세요."
+    exit 1
+fi
 
-# 챗봇 실행
-cd whisplay-ai-chatbot
-sudo env PATH=$PATH:/home/pi/.nvm/versions/node/v20.20.2/bin bash run_chatbot.sh
+# 실행
+sudo python3 main.py
