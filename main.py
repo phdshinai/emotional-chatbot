@@ -88,11 +88,18 @@ def record_audio():
 def transcribe(wav_path):
     with open(wav_path, "rb") as f:
         audio_data = f.read()
+    import base64
+    audio_b64 = base64.b64encode(audio_data).decode()
     response = client.models.generate_content(
         model="gemini-2.0-flash",
         contents=[
-            "다음 음성을 한국어로 텍스트로 변환해줘. 텍스트만 출력해.",
-            {"mime_type": "audio/wav", "data": audio_data}
+            genai.types.Part(text="다음 음성을 한국어로 텍스트로 변환해줘. 텍스트만 출력해."),
+            genai.types.Part(
+                inline_data=genai.types.Blob(
+                    mime_type="audio/wav",
+                    data=audio_b64
+                )
+            )
         ]
     )
     return response.text.strip()
