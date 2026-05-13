@@ -20,7 +20,7 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 SYSTEM_PROMPT_PATH = os.getenv("SYSTEM_PROMPT_PATH", "./prompts/system_prompt.txt")
 
-genai.configure(api_key=GEMINI_API_KEY)
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 # 시스템 프롬프트 로드
 with open(SYSTEM_PROMPT_PATH, "r", encoding="utf-8") as f:
@@ -86,26 +86,27 @@ def record_audio():
 
 
 def transcribe(wav_path):
-    """Gemini로 음성인식"""
-    model = genai.GenerativeModel("gemini-2.0-flash")
     with open(wav_path, "rb") as f:
         audio_data = f.read()
-    response = model.generate_content([
-        "다음 음성을 한국어로 텍스트로 변환해줘. 텍스트만 출력해.",
-        {"mime_type": "audio/wav", "data": audio_data}
-    ])
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=[
+            "다음 음성을 한국어로 텍스트로 변환해줘. 텍스트만 출력해.",
+            {"mime_type": "audio/wav", "data": audio_data}
+        ]
+    )
     return response.text.strip()
 
 
 def get_response(user_text):
-    """Gemini로 감성 응답 생성"""
-    model = genai.GenerativeModel(
-        model_name="gemini-2.0-flash",
-        system_instruction=SYSTEM_PROMPT
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=user_text,
+        config=genai.types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT
+        )
     )
-    response = model.generate_content(user_text)
     text = response.text.strip()
-    # 코드블록 제거
     text = text.replace("```json", "").replace("```", "").strip()
     try:
         result = json.loads(text)
