@@ -149,18 +149,18 @@ def speak(text):
         tmp.write(audio_data)
         tmp.close()
 
-        # ffmpeg으로 리샘플링 후 aplay로 재생
+        # ffmpeg으로 리샘플링 후 stereo로 변환
         subprocess.run([
             "ffmpeg", "-y",
             "-f", "s16le", "-ar", "24000", "-ac", "1",
             "-i", tmp.name,
-            "-f", "s16le", "-ar", "44100", "-ac", "1",
+            "-f", "s16le", "-ar", "44100", "-ac", "2",
             "/tmp/tts_out.raw"
         ], capture_output=True)
         os.unlink(tmp.name)
 
         subprocess.run([
-            "aplay", "-f", "S16_LE", "-r", "44100", "-c", "1",
+            "aplay", "-f", "S16_LE", "-r", "44100", "-c", "2",
             "-D", "hw:0,0", "/tmp/tts_out.raw"
         ])
     except Exception as e:
