@@ -9,7 +9,7 @@ if [ ! -f .env ]; then
     exit 1
 fi
 
-# 드라이버 경로 확인
+# 드라이버 확인
 DRIVER_PATH="$HOME/whisplay/Driver"
 if [ ! -f "$DRIVER_PATH/WhisPlay.py" ]; then
     echo "❌ Whisplay 드라이버가 없어요!"
