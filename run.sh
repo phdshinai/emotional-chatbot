@@ -10,11 +10,12 @@ if [ ! -f .env ]; then
 fi
 
 # 드라이버 경로 확인
-if [ ! -f ~/whisplay/Driver/WhisPlay.py ]; then
+DRIVER_PATH="$HOME/whisplay/Driver"
+if [ ! -f "$DRIVER_PATH/WhisPlay.py" ]; then
     echo "❌ Whisplay 드라이버가 없어요!"
     echo "bash install.sh 먼저 실행하세요."
     exit 1
 fi
 
 # 실행
-sudo python3 main.py
+sudo PYTHONPATH=$DRIVER_PATH python3 main.py

@@ -1,74 +1,74 @@
 from PIL import Image, ImageDraw
 import time
 
-DISPLAY_SIZE = (240, 240)
-BG_COLOR = (0, 0, 0)
-EYE_COLOR = (255, 255, 255)
-PUPIL_COLOR = (0, 0, 0)
-HIGHLIGHT_COLOR = (255, 255, 255)
-TEAR_COLOR = (100, 200, 255)
-BLUSH_COLOR = (255, 150, 150)
+W, H = 240, 280
+BG = (0, 0, 0)
+WHITE = (255, 255, 255)
+CYAN = (100, 220, 255)
+PINK = (255, 180, 200)
+YELLOW = (255, 230, 100)
 
 def create_base():
-    img = Image.new("RGB", DISPLAY_SIZE, BG_COLOR)
+    img = Image.new("RGB", (W, H), BG)
     draw = ImageDraw.Draw(img)
     return img, draw
 
+# 눈 위치 (두 줄만으로 귀엽게)
+LX, RX, EY = 80, 160, 130  # 왼쪽X, 오른쪽X, 눈Y
+
 def draw_neutral(draw):
-    # 왼쪽 눈
-    draw.ellipse((55, 80, 105, 145), fill=EYE_COLOR)
-    draw.ellipse((70, 95, 90, 115), fill=PUPIL_COLOR)
-    draw.ellipse((72, 97, 80, 105), fill=HIGHLIGHT_COLOR)
-    # 오른쪽 눈
-    draw.ellipse((135, 80, 185, 145), fill=EYE_COLOR)
-    draw.ellipse((150, 95, 170, 115), fill=PUPIL_COLOR)
-    draw.ellipse((152, 97, 160, 105), fill=HIGHLIGHT_COLOR)
+    # ◉ ◉ 동그란 눈
+    draw.ellipse((LX-22, EY-28, LX+22, EY+28), fill=WHITE)
+    draw.ellipse((LX-10, EY-12, LX+10, EY+12), fill=BG)
+    draw.ellipse((LX-4,  EY-18, LX+4,  EY-10), fill=WHITE)
+    draw.ellipse((RX-22, EY-28, RX+22, EY+28), fill=WHITE)
+    draw.ellipse((RX-10, EY-12, RX+10, EY+12), fill=BG)
+    draw.ellipse((RX-4,  EY-18, RX+4,  EY-10), fill=WHITE)
 
 def draw_happy(draw):
-    # 초승달 눈 (위로 휜 곡선)
-    draw.arc((55, 90, 105, 140), start=200, end=340, fill=EYE_COLOR, width=12)
-    draw.arc((135, 90, 185, 140), start=200, end=340, fill=EYE_COLOR, width=12)
+    # ∪ ∪ 초승달 눈
+    draw.arc((LX-24, EY-10, LX+24, EY+30), start=0, end=180, fill=WHITE, width=8)
+    draw.arc((RX-24, EY-10, RX+24, EY+30), start=0, end=180, fill=WHITE, width=8)
     # 볼터치
-    draw.ellipse((40, 140, 80, 160), fill=BLUSH_COLOR)
-    draw.ellipse((160, 140, 200, 160), fill=BLUSH_COLOR)
+    draw.ellipse((LX-35, EY+30, LX+5,  EY+50), fill=PINK)
+    draw.ellipse((RX-5,  EY+30, RX+35, EY+50), fill=PINK)
 
 def draw_sad(draw):
-    # 눈동자 아래로
-    draw.ellipse((55, 85, 105, 150), fill=EYE_COLOR)
-    draw.ellipse((70, 108, 90, 128), fill=PUPIL_COLOR)
-    draw.ellipse((72, 110, 80, 118), fill=HIGHLIGHT_COLOR)
-    draw.ellipse((135, 85, 185, 150), fill=EYE_COLOR)
-    draw.ellipse((150, 108, 170, 128), fill=PUPIL_COLOR)
-    draw.ellipse((152, 110, 160, 118), fill=HIGHLIGHT_COLOR)
+    # 슬픈 눈 + 눈물
+    draw.ellipse((LX-20, EY-24, LX+20, EY+24), fill=WHITE)
+    draw.ellipse((LX-8,  EY+2,  LX+8,  EY+18), fill=BG)
+    draw.ellipse((RX-20, EY-24, RX+20, EY+24), fill=WHITE)
+    draw.ellipse((RX-8,  EY+2,  RX+8,  EY+18), fill=BG)
     # 눈물
-    draw.ellipse((75, 148, 88, 170), fill=TEAR_COLOR)
-    draw.ellipse((155, 148, 168, 170), fill=TEAR_COLOR)
+    draw.ellipse((LX-4, EY+26, LX+4, EY+44), fill=CYAN)
+    draw.ellipse((RX-4, EY+26, RX+4, EY+44), fill=CYAN)
 
 def draw_calm(draw):
-    # 반쯤 감긴 눈
-    draw.ellipse((55, 95, 105, 145), fill=EYE_COLOR)
-    draw.rectangle((55, 95, 105, 118), fill=BG_COLOR)
-    draw.ellipse((70, 108, 90, 128), fill=PUPIL_COLOR)
-    draw.ellipse((135, 95, 185, 145), fill=EYE_COLOR)
-    draw.rectangle((135, 95, 185, 118), fill=BG_COLOR)
-    draw.ellipse((150, 108, 170, 128), fill=PUPIL_COLOR)
+    # 반달 눈 (편안한)
+    draw.arc((LX-22, EY-14, LX+22, EY+20), start=180, end=360, fill=WHITE, width=8)
+    draw.arc((RX-22, EY-14, RX+22, EY+20), start=180, end=360, fill=WHITE, width=8)
 
 def draw_concerned(draw):
-    # 눈썹 살짝 모임
-    draw.ellipse((55, 85, 105, 150), fill=EYE_COLOR)
-    draw.ellipse((70, 100, 90, 120), fill=PUPIL_COLOR)
-    draw.ellipse((72, 102, 80, 110), fill=HIGHLIGHT_COLOR)
-    draw.ellipse((135, 85, 185, 150), fill=EYE_COLOR)
-    draw.ellipse((150, 100, 170, 120), fill=PUPIL_COLOR)
-    draw.ellipse((152, 102, 160, 110), fill=HIGHLIGHT_COLOR)
+    # 걱정 눈 (눈썹 모임)
+    draw.ellipse((LX-20, EY-22, LX+20, EY+22), fill=WHITE)
+    draw.ellipse((LX-7,  EY-8,  LX+7,  EY+8),  fill=BG)
+    draw.ellipse((RX-20, EY-22, RX+20, EY+22), fill=WHITE)
+    draw.ellipse((RX-7,  EY-8,  RX+7,  EY+8),  fill=BG)
     # 걱정 눈썹
-    draw.line((60, 72, 100, 80), fill=EYE_COLOR, width=6)
-    draw.line((140, 80, 180, 72), fill=EYE_COLOR, width=6)
+    draw.line((LX-18, EY-34, LX+18, EY-26), fill=WHITE, width=5)
+    draw.line((RX-18, EY-26, RX+18, EY-34), fill=WHITE, width=5)
 
 def draw_blink(draw):
-    # 납작한 눈
-    draw.ellipse((55, 108, 105, 122), fill=EYE_COLOR)
-    draw.ellipse((135, 108, 185, 122), fill=EYE_COLOR)
+    # — — 납작하게 감은 눈
+    draw.ellipse((LX-22, EY-5, LX+22, EY+5), fill=WHITE)
+    draw.ellipse((RX-22, EY-5, RX+22, EY+5), fill=WHITE)
+
+def draw_surprised(draw):
+    # ○ ○ 크게 뜬 눈
+    draw.ellipse((LX-26, EY-32, LX+26, EY+32), fill=WHITE)
+    draw.ellipse((LX-10, EY-14, LX+10, EY+14), fill=BG)
+    draw.ellipse((RX-26, EY-32, RX+26, EY+32), fill=WHITE)
+    draw.ellipse((RX-10, EY-14, RX+10, EY+14), fill=BG)
 
 def get_expression(emotion):
     img, draw = create_base()
@@ -82,18 +82,11 @@ def get_expression(emotion):
         draw_concerned(draw)
     elif emotion == "blink":
         draw_blink(draw)
+    elif emotion == "surprised":
+        draw_surprised(draw)
     else:
         draw_neutral(draw)
     return img
 
 def blink_animation(display):
-    """깜빡임 애니메이션"""
-    for _ in range(2):
-        img, draw = create_base()
-        draw_neutral(draw)
-        display.ShowImage(img)
-        time.sleep(2.5)
-        img, draw = create_base()
-        draw_blink(draw)
-        display.ShowImage(img)
-        time.sleep(0.15)
+    pass
